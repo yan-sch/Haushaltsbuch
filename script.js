@@ -1,85 +1,138 @@
+// ==========================================
+// 1. HTML-ELEMENTE IN VARIABLEN SPEICHERN
+// ==========================================
 const form = document.getElementById('transaction-form');
 const descriptionInput = document.getElementById('description');
 const amountInput = document.getElementById('amount');
 const categorySelect = document.getElementById('category');
+const subcategorySelect = document.getElementById('subcategory'); // Das neue Unterkategorie-Feld
 const transactionList = document.getElementById('transaction-list');
 
 const totalBalanceDisplay = document.getElementById('total-balance');
 const incomeDisplay = document.getElementById('total-income');
 const expenseDisplay = document.getElementById('total-expense');
 
-// Unser Datenspeicher
+// ==========================================
+// 2. UNSER DATENSPEICHER
+// ==========================================
+// Hier landen alle Buchungen als Objekte
 let buchungen = [];
 
+// ==========================================
+// 3. LOGIK FÜR DIE UNTERKATEGORIEN
+// ==========================================
+// Unsere Listen (Arrays) mit den Auswahlmöglichkeiten
+const einnahmeKategorien = ["Gehälter", "Staatl. Unterstützung", "Sonstige Einnahmen"];
+const ausgabeKategorien = ["Wohnen", "Mobilität", "Medien", "Sport", "Gesundheit", "Versicherungen", "Haushaltseinkauf", "Auswärts essen", "Investitionen", "Haustiere", "Spaß", "Sonstige"];
+
+// Funktion zum Füllen des zweiten Dropdowns
+function updateSubcategories() {
+    // 1. Zuerst das untere Dropdown komplett leeren
+    subcategorySelect.innerHTML = "";
+    
+    // 2. Prüfen, was oben gerade ausgewählt ist
+    const gewaehlteKategorie = categorySelect.value;
+    let optionen = [];
+
+    if (gewaehlteKategorie === "einnahme") {
+        optionen = einnahmeKategorien;
+    } else {
+        optionen = ausgabeKategorien;
+    }
+
+    // 3. Für jedes Wort in unserer Liste eine neue <option> erstellen
+    optionen.forEach(function(kategorieName) {
+        const neueOption = document.createElement("option");
+        neueOption.value = kategorieName;
+        neueOption.innerText = kategorieName;
+        subcategorySelect.appendChild(neueOption); // Ins HTML einfügen
+    });
+}
+
+// Wenn sich das obere Dropdown ändert, fülle das untere neu
+categorySelect.addEventListener("change", updateSubcategories);
+
+// Die Funktion einmal sofort beim Laden der Seite aufrufen!
+updateSubcategories();
+
+// ==========================================
+// 4. BENUTZEROBERFLÄCHE AKTUALISIEREN (UI)
+// ==========================================
 function updateUI() {
-    // 1. Liste im HTML erst einmal leeren, damit wir keine doppelten Einträge bekommen
+    // Liste im HTML leeren, um doppelte Einträge zu vermeiden
     transactionList.innerHTML = '';
 
-    // 2. Startwerte für unsere Berechnungen setzen
+    // Startwerte für Berechnungen
     let total = 0;
     let income = 0;
     let expense = 0;
 
-    // 3. Wir gehen jeden Eintrag in unserem Array "buchungen" einzeln durch
+    // Einträge durchgehen und rechnen
     buchungen.forEach(function(buchung) {
         
-        // --- A) Mathematik ---
-        total = total + buchung.wert; // Zum Gesamtkonto addieren
+        // Mathematik
+        total = total + buchung.wert;
         
         if (buchung.wert > 0) {
-            income = income + buchung.wert; // Plus-Beträge zu Einnahmen
+            income = income + buchung.wert;
         } else {
-            expense = expense + buchung.wert; // Minus-Beträge zu Ausgaben
+            expense = expense + buchung.wert;
         }
 
-        // --- B) HTML-Element für die Liste erstellen ---
-        const li = document.createElement('li'); // Erstellt ein leeres <li> Tag
-        li.innerText = buchung.beschreibung + ": " + buchung.wert.toFixed(2) + "€"; 
+        // HTML-Element für die Liste erstellen
+        const li = document.createElement('li');
         
-        // Farbe zuweisen (aus unserer CSS-Datei)
+        // Text zusammensetzen (mit Unterkategorie in Klammern)
+        li.innerText = buchung.beschreibung + " (" + buchung.unterkategorie + "): " + buchung.wert.toFixed(2) + "€"; 
+        
+        // CSS Farbe (Grün oder Rot) zuweisen
         if (buchung.wert > 0) {
-            li.classList.add('plus'); // Grüner Rand
+            li.classList.add('plus');
         } else {
-            li.classList.add('minus'); // Roter Rand
+            li.classList.add('minus');
         }
 
-        // Das fertige <li> Element in unsere <ul> Liste im HTML schieben
+        // In die HTML-Liste einfügen
         transactionList.appendChild(li);
     });
 
-    // 4. Die berechneten Zahlen in die Übersicht (Dashboard) schreiben
-    // .toFixed(2) sorgt dafür, dass immer zwei Nachkommastellen (Cent) angezeigt werden
+    // Dashboard-Werte im HTML aktualisieren (auf 2 Nachkommastellen gerundet)
     totalBalanceDisplay.innerText = total.toFixed(2);
     incomeDisplay.innerText = income.toFixed(2);
-    expenseDisplay.innerText = expense.toFixed(2);
+    expenseDisplay.innerText = expense.toFixed(2); 
 }
 
+// ==========================================
+// 5. FORMULAR ABSENDEN & DATEN SPEICHERN
+// ==========================================
 form.addEventListener('submit', function(event) {
     event.preventDefault(); // Verhindert das Neuladen der Seite
 
+    // Daten aus den Eingabefeldern holen
     const text = descriptionInput.value;
     let betrag = parseFloat(amountInput.value);
     const kategorie = categorySelect.value;
+    const unterkategorieWert = subcategorySelect.value; // Wert der Unterkategorie holen
 
-    // Logik: Ausgaben negativ machen
+    // Ausgaben in negative Zahlen umwandeln
     if (kategorie === "ausgabe") {
         betrag = betrag * -1;
     }
     
-    // Objekt erstellen
+    // Neues Objekt für die Buchung erstellen
     const neueBuchung = {
         beschreibung: text,
-        wert: betrag
+        wert: betrag,
+        unterkategorie: unterkategorieWert // Unterkategorie speichern
     };
 
-    // 1. Daten in unser Array speichern
+    // 1. Objekt in unser Array packen
     buchungen.push(neueBuchung);
     
-    // 2. Formular-Felder wieder leeren
+    // 2. Eingabefelder wieder leeren für die nächste Eingabe
     descriptionInput.value = '';
     amountInput.value = '';
 
-    // 3. HIER IST DER MAGISCHE BEFEHL:
-    // Wir rufen die Funktion auf, damit die Webseite neu gezeichnet wird!
+    // 3. Die Anzeige aktualisieren!
     updateUI(); 
 });
