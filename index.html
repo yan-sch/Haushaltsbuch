@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mein Haushaltsbuch</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Haushaltsbuch</h1>
+
+        <section id="dashboard">
+            <div class="balance">
+                <h2>Kontostand: <span id="total-balance">0.00</span>€</h2>
+            </div>
+            <div class="stats">
+                <p>Einnahmen: <span id="total-income" style="color: green;">0.00</span>€</p>
+                <p>Ausgaben: <span id="total-expense" style="color: red;">0.00</span>€</p>
+            </div>
+        </section>
+
+        <section id="input-section">
+            <form id="transaction-form">
+                <input type="text" id="description" placeholder="Beschreibung (z.B. Gehalt, Miete)" required>
+                <input type="number" id="amount" placeholder="Betrag in €" step="0.01" required>
+                
+                <select id="category">
+                    <option value="einnahme">Einnahme (+)</option>
+                    <option value="ausgabe">Ausgabe (-)</option>
+                </select>
+
+                <button type="submit">Hinzufügen</button>
+            </form>
+        </section>
+
+        <section id="list-section">
+            <h3>Letzte Buchungen</h3>
+            <ul id="transaction-list">
+                </ul>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
