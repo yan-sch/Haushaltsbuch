@@ -4,52 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mein Haushaltsbuch</title>
-    
-    <!-- Verknuepfung der CSS-Datei fuer das Design -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Haupt-Container, der alles zentriert zusammenhaelt -->
-    <div class="container">
-        <h1>💰 Haushaltsbuch</h1>
+    <!-- Wir fügen die Klasse 'layout-split' hinzu, um Flexbox zu aktivieren -->
+    <div class="container layout-split">
+        
+        <!-- LINKE SPALTE: Dashboard & Eingabe -->
+        <div class="left-column">
+            <h1>💰 Haushaltsbuch</h1>
+            
+            <section id="dashboard">
+                <div class="balance">
+                    <h2>Kontostand: <span id="total-balance">0.00</span>€</h2>
+                </div>
+                <div class="stats">
+                    <p>Einnahmen: <span id="total-income" style="color: green;">0.00</span>€</p>
+                    <p>Ausgaben: <span id="total-expense" style="color: red;">0.00</span>€</p>
+                </div>
+            </section>
 
-        <!-- Abschnitt 1: Zeigt den aktuellen Kontostand und die Gesamtsummen an -->
-        <section id="dashboard">
-            <div class="balance">
-                <h2>Kontostand: <span id="total-balance">0.00</span>€</h2>
-            </div>
-            <div class="stats">
-                <p>Einnahmen: <span id="total-income" style="color: green;">0.00</span>€</p>
-                <p>Ausgaben: <span id="total-expense" style="color: red;">0.00</span>€</p>
-            </div>
-        </section>
+            <section id="input-section">
+                <form id="transaction-form">
+                    <input type="text" id="description" placeholder="Beschreibung (z.B. Gehalt, Miete)" required>
+                    <input type="number" id="amount" placeholder="Betrag in €" step="0.01" required>
+                    <select id="category">
+                        <option value="einnahme">Einnahme (+)</option>
+                        <option value="ausgabe">Ausgabe (-)</option>
+                    </select>
+                    <select id="subcategory">
+                        <!-- Wird durch JS gefüllt -->
+                    </select>
+                    <button type="submit">Hinzufügen</button>
+                </form>
+            </section>
+        </div>
 
-        <!-- Abschnitt 2: Formular zum Eintragen neuer Einnahmen und Ausgaben -->
-        <section id="input-section">
-            <form id="transaction-form">
-                <input type="text" id="description" placeholder="Beschreibung (z.B. Gehalt, Miete)" required>
-                <input type="number" id="amount" placeholder="Betrag in €" step="0.01" required>
-                <select id="category">
-                    <option value="einnahme">Einnahme (+)</option>
-                    <option value="ausgabe">Ausgabe (-)</option>
-                </select>
+        <!-- RECHTE SPALTE: Die sortierte Liste -->
+        <div class="right-column">
+            <section id="list-section">
+                <h3>Buchungsübersicht</h3>
+                
+                <!-- NEU: Ein Container (div) statt einer festen Liste (ul) -->
+                <div id="transaction-list-container">
+                    <!-- JS generiert hier gleich die Zwischenüberschriften und Listen -->
+                </div>
+            </section>
+        </div>
 
-                <select id="subcategory">
-                  </select>
-                <button type="submit">Hinzufügen</button>
-            </form>
-        </section>
-
-        <!-- Abschnitt 3: Liste, in der alle getaetigten Buchungen untereinander erscheinen -->
-        <section id="list-section">
-            <h3>Letzte Buchungen</h3>
-            <ul id="transaction-list">
-                <!-- JavaScript fuegt hier spaeter die einzelnen Eintraege ein -->
-            </ul>
-        </section>
     </div>
 
-    <!-- Einbinden der JavaScript-Datei fuer die Programmlogik am Ende -->
     <script src="script.js"></script>
 </body>
 </html>

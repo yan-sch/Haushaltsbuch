@@ -5,134 +5,131 @@ const form = document.getElementById('transaction-form');
 const descriptionInput = document.getElementById('description');
 const amountInput = document.getElementById('amount');
 const categorySelect = document.getElementById('category');
-const subcategorySelect = document.getElementById('subcategory'); // Das neue Unterkategorie-Feld
-const transactionList = document.getElementById('transaction-list');
+const subcategorySelect = document.getElementById('subcategory');
+// NEU: Wir greifen jetzt den Container ab, nicht mehr das <ul>
+const transactionListContainer = document.getElementById('transaction-list-container');
 
 const totalBalanceDisplay = document.getElementById('total-balance');
 const incomeDisplay = document.getElementById('total-income');
 const expenseDisplay = document.getElementById('total-expense');
 
-// ==========================================
-// 2. UNSER DATENSPEICHER
-// ==========================================
-// Hier landen alle Buchungen als Objekte
 let buchungen = [];
 
 // ==========================================
-// 3. LOGIK FÜR DIE UNTERKATEGORIEN
+// 2. LOGIK FÜR DIE UNTERKATEGORIEN
 // ==========================================
-// Unsere Listen (Arrays) mit den Auswahlmöglichkeiten
 const einnahmeKategorien = ["Gehälter", "Staatl. Unterstützung", "Sonstige Einnahmen"];
 const ausgabeKategorien = ["Wohnen", "Mobilität", "Medien", "Sport", "Gesundheit", "Versicherungen", "Haushaltseinkauf", "Auswärts essen", "Investitionen", "Haustiere", "Spaß", "Sonstige"];
 
-// Funktion zum Füllen des zweiten Dropdowns
 function updateSubcategories() {
-    // 1. Zuerst das untere Dropdown komplett leeren
     subcategorySelect.innerHTML = "";
-    
-    // 2. Prüfen, was oben gerade ausgewählt ist
     const gewaehlteKategorie = categorySelect.value;
-    let optionen = [];
+    let optionen = gewaehlteKategorie === "einnahme" ? einnahmeKategorien : ausgabeKategorien;
 
-    if (gewaehlteKategorie === "einnahme") {
-        optionen = einnahmeKategorien;
-    } else {
-        optionen = ausgabeKategorien;
-    }
-
-    // 3. Für jedes Wort in unserer Liste eine neue <option> erstellen
     optionen.forEach(function(kategorieName) {
         const neueOption = document.createElement("option");
         neueOption.value = kategorieName;
         neueOption.innerText = kategorieName;
-        subcategorySelect.appendChild(neueOption); // Ins HTML einfügen
+        subcategorySelect.appendChild(neueOption);
     });
 }
-
-// Wenn sich das obere Dropdown ändert, fülle das untere neu
 categorySelect.addEventListener("change", updateSubcategories);
-
-// Die Funktion einmal sofort beim Laden der Seite aufrufen!
 updateSubcategories();
 
 // ==========================================
-// 4. BENUTZEROBERFLÄCHE AKTUALISIEREN (UI)
+// 3. BENUTZEROBERFLÄCHE AKTUALISIEREN (UI) - NEU GESCHRIEBEN
 // ==========================================
 function updateUI() {
-    // Liste im HTML leeren, um doppelte Einträge zu vermeiden
-    transactionList.innerHTML = '';
+    transactionListContainer.innerHTML = ''; // Alles leeren
 
-    // Startwerte für Berechnungen
     let total = 0;
     let income = 0;
     let expense = 0;
 
-    // Einträge durchgehen und rechnen
+    // --- SCHRITT A: DATEN GRUPPIEREN ---
+    // Wir erstellen ein leeres Objekt als unser "Ordnersystem"
+    const gruppen = {}; 
+
     buchungen.forEach(function(buchung) {
-        
-        // Mathematik
-        total = total + buchung.wert;
-        
-        if (buchung.wert > 0) {
-            income = income + buchung.wert;
-        } else {
-            expense = expense + buchung.wert;
+        // Gesamtsummen fürs Dashboard berechnen
+        total += buchung.wert;
+        if (buchung.wert > 0) { income += buchung.wert; } 
+        else { expense += buchung.wert; }
+
+        // Entscheiden, in welchen "Hauptordner" es kommt (anhand des Werts)
+        const hauptKat = buchung.wert > 0 ? "Einnahmen" : "Ausgaben";
+        const unterKat = buchung.unterkategorie;
+
+        // Wenn der Ordner noch nicht existiert, erstelle ihn
+        if (!gruppen[hauptKat]) { gruppen[hauptKat] = {}; }
+        if (!gruppen[hauptKat][unterKat]) { 
+            gruppen[hauptKat][unterKat] = { eintraege: [], summe: 0 }; 
         }
 
-        // HTML-Element für die Liste erstellen
-        const li = document.createElement('li');
-        
-        // Text zusammensetzen (mit Unterkategorie in Klammern)
-        li.innerText = buchung.beschreibung + " (" + buchung.unterkategorie + "): " + buchung.wert.toFixed(2) + "€"; 
-        
-        // CSS Farbe (Grün oder Rot) zuweisen
-        if (buchung.wert > 0) {
-            li.classList.add('plus');
-        } else {
-            li.classList.add('minus');
-        }
-
-        // In die HTML-Liste einfügen
-        transactionList.appendChild(li);
+        // Buchung in den richtigen Ordner ablegen und Zwischensumme aktualisieren
+        gruppen[hauptKat][unterKat].eintraege.push(buchung);
+        gruppen[hauptKat][unterKat].summe += buchung.wert;
     });
 
-    // Dashboard-Werte im HTML aktualisieren (auf 2 Nachkommastellen gerundet)
+    // --- SCHRITT B: HTML AUS DEN GRUPPEN GENERIEREN ---
+    // Wir gehen durch unsere erstellten Ordner ("Einnahmen", "Ausgaben")
+    Object.keys(gruppen).forEach(function(hauptKat) {
+        
+        // Wir gehen durch die Unterordner (z.B. "Wohnen", "Mobilität")
+        Object.keys(gruppen[hauptKat]).forEach(function(unterKat) {
+            const gruppenDaten = gruppen[hauptKat][unterKat];
+
+            // 1. Zwischenüberschrift erstellen (z.B. "Wohnen (Zwischensumme: -500€)")
+            const titelElement = document.createElement('h4');
+            titelElement.classList.add('gruppen-titel');
+            titelElement.innerHTML = `<span>${unterKat}</span> <span>${gruppenDaten.summe.toFixed(2)}€</span>`;
+            transactionListContainer.appendChild(titelElement);
+
+            // 2. Eine neue <ul> Liste für diese spezifische Gruppe erstellen
+            const ul = document.createElement('ul');
+
+            // 3. Alle Einträge aus diesem Ordner als <li> in die neue Liste packen
+            gruppenDaten.eintraege.forEach(function(buchung) {
+                const li = document.createElement('li');
+                li.innerText = buchung.beschreibung + ": " + buchung.wert.toFixed(2) + "€";
+                li.classList.add(buchung.wert > 0 ? 'plus' : 'minus');
+                ul.appendChild(li);
+            });
+
+            // 4. Die fertige Liste unter die Überschrift ins HTML schieben
+            transactionListContainer.appendChild(ul);
+        });
+    });
+
+    // Dashboard-Werte updaten
     totalBalanceDisplay.innerText = total.toFixed(2);
     incomeDisplay.innerText = income.toFixed(2);
     expenseDisplay.innerText = expense.toFixed(2); 
 }
 
 // ==========================================
-// 5. FORMULAR ABSENDEN & DATEN SPEICHERN
+// 4. FORMULAR ABSENDEN 
 // ==========================================
 form.addEventListener('submit', function(event) {
-    event.preventDefault(); // Verhindert das Neuladen der Seite
+    event.preventDefault();
 
-    // Daten aus den Eingabefeldern holen
     const text = descriptionInput.value;
     let betrag = parseFloat(amountInput.value);
     const kategorie = categorySelect.value;
-    const unterkategorieWert = subcategorySelect.value; // Wert der Unterkategorie holen
+    const unterkategorieWert = subcategorySelect.value;
 
-    // Ausgaben in negative Zahlen umwandeln
-    if (kategorie === "ausgabe") {
-        betrag = betrag * -1;
-    }
+    if (kategorie === "ausgabe") { betrag = betrag * -1; }
     
-    // Neues Objekt für die Buchung erstellen
     const neueBuchung = {
         beschreibung: text,
         wert: betrag,
-        unterkategorie: unterkategorieWert // Unterkategorie speichern
+        unterkategorie: unterkategorieWert
     };
 
-    // 1. Objekt in unser Array packen
     buchungen.push(neueBuchung);
     
-    // 2. Eingabefelder wieder leeren für die nächste Eingabe
     descriptionInput.value = '';
     amountInput.value = '';
 
-    // 3. Die Anzeige aktualisieren!
     updateUI(); 
 });
