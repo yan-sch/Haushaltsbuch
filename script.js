@@ -57,7 +57,7 @@ function updateUI() {
 
     const gruppen = {}; 
 
-    // Daten berechnen und gruppieren
+    // 1. Daten berechnen und gruppieren
     buchungen.forEach(function(buchung) {
         total += buchung.wert;
         if (buchung.wert > 0) { income += buchung.wert; } 
@@ -75,10 +75,19 @@ function updateUI() {
         gruppen[hauptKat][unterKat].summe += buchung.wert;
     });
 
-    // HTML aus den Gruppen generieren
+    // --- NEU: Gesamtsaldo als oberstes Element in der Liste ---
+    // Dies wird nur angezeigt, wenn überhaupt Buchungen vorhanden sind
+    if (buchungen.length > 0) {
+        const saldoElement = document.createElement('div');
+        saldoElement.classList.add('saldo-titel');
+        saldoElement.innerHTML = `<span>Gesamtsaldo</span> <span>${total.toFixed(2)}€</span>`;
+        transactionListContainer.appendChild(saldoElement);
+    }
+
+    // 2. HTML aus den Gruppen generieren
     Object.keys(gruppen).forEach(function(hauptKat) {
         
-        // Summe für Hauptkategorie
+        // Summe für Hauptkategorie berechnen
         let hauptKatSumme = 0;
         Object.keys(gruppen[hauptKat]).forEach(function(unterKat) {
             hauptKatSumme += gruppen[hauptKat][unterKat].summe;
@@ -124,6 +133,7 @@ function updateUI() {
         });
     });
 
+    // Dashboard-Werte updaten
     totalBalanceDisplay.innerText = total.toFixed(2);
     incomeDisplay.innerText = income.toFixed(2);
     expenseDisplay.innerText = expense.toFixed(2); 

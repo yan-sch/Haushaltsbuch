@@ -104,6 +104,19 @@ ul {
     margin-top: 0;
 }
 
+/* Spezielles Design für den Gesamtsaldo ganz oben in der Liste */
+.saldo-titel {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background-color: #34495e; /* Ein professionelles Dunkelblau */
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
 /* Hauptkategorien (Einnahmen / Ausgaben) */
 .haupt-titel {
     display: flex;
