@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mein Haushaltsbuch</title>
+    
+    <!-- Verknuepfung der CSS-Datei fuer das Design -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Haupt-Container, der alles zentriert zusammenhaelt -->
     <div class="container">
         <h1>💰 Haushaltsbuch</h1>
 
+        <!-- Abschnitt 1: Zeigt den aktuellen Kontostand und die Gesamtsummen an -->
         <section id="dashboard">
             <div class="balance">
                 <h2>Kontostand: <span id="total-balance">0.00</span>€</h2>
@@ -20,28 +24,29 @@
             </div>
         </section>
 
+        <!-- Abschnitt 2: Formular zum Eintragen neuer Einnahmen und Ausgaben -->
         <section id="input-section">
             <form id="transaction-form">
                 <input type="text" id="description" placeholder="Beschreibung (z.B. Gehalt, Miete)" required>
-                
                 <input type="number" id="amount" placeholder="Betrag in €" step="0.01" required>
-                
                 <select id="category">
                     <option value="einnahme">Einnahme (+)</option>
                     <option value="ausgabe">Ausgabe (-)</option>
                 </select>
-
                 <button type="submit">Hinzufügen</button>
             </form>
         </section>
 
+        <!-- Abschnitt 3: Liste, in der alle getaetigten Buchungen untereinander erscheinen -->
         <section id="list-section">
             <h3>Letzte Buchungen</h3>
             <ul id="transaction-list">
-                </ul>
+                <!-- JavaScript fuegt hier spaeter die einzelnen Eintraege ein -->
+            </ul>
         </section>
     </div>
 
+    <!-- Einbinden der JavaScript-Datei fuer die Programmlogik am Ende -->
     <script src="script.js"></script>
 </body>
 </html>
