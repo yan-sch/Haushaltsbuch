@@ -230,3 +230,93 @@ function erstelleCSV() {
     
     URL.revokeObjectURL(url);
 }
+
+// ==========================================
+// 7. KI-FINANZBERATUNG (GEMINI API)
+// ==========================================
+
+const dashboardPage = document.querySelector('.layout-split:not(#consultation-page)');
+const consultationPage = document.getElementById('consultation-page');
+const showConsultationBtn = document.getElementById('show-consultation-btn');
+const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+const apiKeyInput = document.getElementById('api-key-input');
+const aiContextInput = document.getElementById('ai-context');
+const startConsultationBtn = document.getElementById('start-consultation-btn');
+const aiResponseContainer = document.getElementById('ai-response-container');
+
+// --- NAVIGATION ---
+showConsultationBtn.addEventListener('click', () => {
+    dashboardPage.style.display = 'none';
+    showConsultationBtn.style.display = 'none';
+    consultationPage.style.display = 'flex';
+});
+
+backToDashboardBtn.addEventListener('click', () => {
+    dashboardPage.style.display = 'flex';
+    showConsultationBtn.style.display = 'block';
+    consultationPage.style.display = 'none';
+});
+
+// --- API-KEY SPEICHERN (Lokal im Browser) ---
+// Beim Laden prüfen, ob schon ein Key da ist
+if (localStorage.getItem('gemini_api_key')) {
+    apiKeyInput.value = localStorage.getItem('gemini_api_key');
+}
+
+apiKeyInput.addEventListener('change', () => {
+    localStorage.setItem('gemini_api_key', apiKeyInput.value);
+});
+
+// --- KI ANFRAGE ---
+async function frageGeminiAn() {
+    const key = apiKeyInput.value;
+    if (!key) {
+        alert("Bitte gib zuerst einen API Key ein!");
+        return;
+    }
+
+    aiResponseContainer.innerText = "Die KI analysiert deine Finanzen... bitte warten...";
+    
+    // 1. Buchungsdaten für die KI aufbereiten
+    const buchungsListeText = buchungen.map(b => 
+        `- ${b.wert > 0 ? 'Einnahme' : 'Ausgabe'}: ${b.unterkategorie} (${b.beschreibung}) -> ${b.wert}€`
+    ).join('\n');
+
+    // 2. Den "Prompt" (Befehl) zusammenbauen
+    const prompt = `
+        Du bist ein professioneller Finanzberater. 
+        Hier ist der Hintergrund des Nutzers: ${aiContextInput.value}
+        
+        Hier sind die aktuellen Buchungen:
+        ${buchungsListeText}
+        
+        Bitte erstelle eine strukturierte Analyse:
+        1. Kurze Zusammenfassung der aktuellen Lage.
+        2. Identifiziere die 3 größten Sparpotenziale.
+        3. Gib konkrete Tipps zur Verbesserung der Liquidität basierend auf den Hintergrundinfos.
+        Halte dich kurz und präzise.
+    `;
+
+    // 3. API Call an Google Gemini
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+            aiResponseContainer.innerText = data.candidates[0].content.parts[0].text;
+        } else {
+            aiResponseContainer.innerText = "Fehler: Die KI konnte keine Antwort generieren. Prüfe deinen Key.";
+        }
+    } catch (error) {
+        aiResponseContainer.innerText = "Verbindungsfehler: " + error.message;
+    }
+}
+
+startConsultationBtn.addEventListener('click', frageGeminiAn);

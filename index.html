@@ -10,7 +10,7 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="Haushaltsbuch">
         <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1611/1611154.png">
-        
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -60,6 +60,34 @@
                         <button id="export-btn" class="export-btn">⬇ Export</button>
                     </div>
                 </div>
+
+                <button id="show-consultation-btn" class="nav-btn">➡️ Zur KI-Finanzberatung</button>
+
+<div class="right-header">
+    </div>
+
+    <div id="consultation-page" class="layout-split" style="display: none;">
+        <div class="left-column">
+            <button id="back-to-dashboard-btn" class="nav-btn">⬅️ Zurück zum Dashboard</button>
+            <h3>Hintergrund-Infos</h3>
+            <p class="info-text">Gib hier Infos zu deiner Lebenssituation ein (Job, Familie, Ziele), damit die KI dich besser beraten kann.</p>
+            <textarea id="ai-context" placeholder="Beispiel: Ich arbeite Vollzeit, habe 2 Kinder, möchte monatlich 500€ sparen für ein Haus..."></textarea>
+            
+            <div class="api-settings">
+                <input type="password" id="api-key-input" placeholder="Google API Key hier einfügen">
+                <small>Dein Key wird nur lokal in deinem Browser gespeichert.</small>
+            </div>
+            
+            <button id="start-consultation-btn" class="ai-btn">✨ Finanzberatung starten</button>
+        </div>
+
+        <div class="right-column">
+            <h3>KI-Empfehlungen</h3>
+            <div id="ai-response-container" class="ai-output">
+                Hier erscheint nach dem Klick deine Analyse...
+            </div>
+        </div>
+    </div>
                 
                 <!-- NEU: Ein Container (div) statt einer festen Liste (ul) -->
                 <div id="transaction-list-container">

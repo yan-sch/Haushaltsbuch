@@ -275,3 +275,65 @@ li.minus { border-left-color: #e74c3c; }
         font-size: 14px;
     }
 }
+
+/* Navigation & Buttons */
+.nav-btn {
+    width: 100%;
+    margin-bottom: 15px;
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.ai-btn {
+    background-color: #8e44ad; /* Lila für KI-Features */
+    color: white;
+    width: 100%;
+    padding: 15px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* Textfelder */
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.api-settings {
+    margin-top: 20px;
+    padding: 10px;
+    background: #fdf2f2;
+    border-radius: 8px;
+}
+
+.api-settings input {
+    width: 100%;
+    font-size: 12px;
+    padding: 8px;
+}
+
+/* KI-Ausgabe */
+.ai-output {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 300px;
+    line-height: 1.6;
+    font-size: 14px;
+    white-space: pre-wrap; /* Behält Zeilenumbrüche der KI bei */
+    border: 1px inset #eee;
+}
+
+.info-text { font-size: 12px; color: #666; margin-bottom: 10px; }
