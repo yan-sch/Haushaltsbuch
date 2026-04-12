@@ -18,7 +18,7 @@ let buchungen = [];
 // 2. LOGIK FÜR DIE UNTERKATEGORIEN
 // ==========================================
 const einnahmeKategorien = ["Gehälter", "Staatl. Unterstützung", "Sonstige Einnahmen"];
-const ausgabeKategorien = ["Wohnen", "Mobilität", "Medien", "Sport", "Gesundheit", "Versicherungen", "Kleidung", "Kommunikation", "Haushaltseinkauf", "Auswärts essen", "Investitionen", "Haustiere", "Spaß", "Sonstige"];
+const ausgabeKategorien = ["Wohnen", "Mobilität", "Medien", "Sport", "Gesundheit", "Versicherungen", "Haushaltseinkauf", "Auswärts essen", "Investitionen", "Haustiere", "Spaß", "Sonstige"];
 
 function updateSubcategories() {
     subcategorySelect.innerHTML = "";
@@ -57,7 +57,6 @@ function updateUI() {
 
     const gruppen = {}; 
 
-    // 1. Daten berechnen und gruppieren
     buchungen.forEach(function(buchung) {
         total += buchung.wert;
         if (buchung.wert > 0) { income += buchung.wert; } 
@@ -75,8 +74,6 @@ function updateUI() {
         gruppen[hauptKat][unterKat].summe += buchung.wert;
     });
 
-    // --- NEU: Gesamtsaldo als oberstes Element in der Liste ---
-    // Dies wird nur angezeigt, wenn überhaupt Buchungen vorhanden sind
     if (buchungen.length > 0) {
         const saldoElement = document.createElement('div');
         saldoElement.classList.add('saldo-titel');
@@ -84,10 +81,7 @@ function updateUI() {
         transactionListContainer.appendChild(saldoElement);
     }
 
-    // 2. HTML aus den Gruppen generieren
     Object.keys(gruppen).forEach(function(hauptKat) {
-        
-        // Summe für Hauptkategorie berechnen
         let hauptKatSumme = 0;
         Object.keys(gruppen[hauptKat]).forEach(function(unterKat) {
             hauptKatSumme += gruppen[hauptKat][unterKat].summe;
@@ -133,7 +127,6 @@ function updateUI() {
         });
     });
 
-    // Dashboard-Werte updaten
     totalBalanceDisplay.innerText = total.toFixed(2);
     incomeDisplay.innerText = income.toFixed(2);
     expenseDisplay.innerText = expense.toFixed(2); 
@@ -234,7 +227,6 @@ function erstelleCSV() {
 // ==========================================
 // 7. KI-FINANZBERATUNG (GEMINI API)
 // ==========================================
-
 const dashboardPage = document.getElementById('main-dashboard');
 const consultationPage = document.getElementById('consultation-page');
 const showConsultationBtn = document.getElementById('show-consultation-btn');
@@ -244,21 +236,18 @@ const aiContextInput = document.getElementById('ai-context');
 const startConsultationBtn = document.getElementById('start-consultation-btn');
 const aiResponseContainer = document.getElementById('ai-response-container');
 
-// --- NAVIGATION ---
+// Navigation
 showConsultationBtn.addEventListener('click', () => {
     dashboardPage.style.display = 'none';
-    showConsultationBtn.style.display = 'none';
     consultationPage.style.display = 'flex';
 });
 
 backToDashboardBtn.addEventListener('click', () => {
     dashboardPage.style.display = 'flex';
-    showConsultationBtn.style.display = 'block';
     consultationPage.style.display = 'none';
 });
 
-// --- API-KEY SPEICHERN (Lokal im Browser) ---
-// Beim Laden prüfen, ob schon ein Key da ist
+// API-Key lokal speichern und laden
 if (localStorage.getItem('gemini_api_key')) {
     apiKeyInput.value = localStorage.getItem('gemini_api_key');
 }
@@ -267,7 +256,7 @@ apiKeyInput.addEventListener('change', () => {
     localStorage.setItem('gemini_api_key', apiKeyInput.value);
 });
 
-// --- KI ANFRAGE ---
+// KI Anfrage
 async function frageGeminiAn() {
     const key = apiKeyInput.value;
     if (!key) {
@@ -277,12 +266,10 @@ async function frageGeminiAn() {
 
     aiResponseContainer.innerText = "Die KI analysiert deine Finanzen... bitte warten...";
     
-    // 1. Buchungsdaten für die KI aufbereiten
     const buchungsListeText = buchungen.map(b => 
         `- ${b.wert > 0 ? 'Einnahme' : 'Ausgabe'}: ${b.unterkategorie} (${b.beschreibung}) -> ${b.wert}€`
     ).join('\n');
 
-    // 2. Den "Prompt" (Befehl) zusammenbauen
     const prompt = `
         Du bist ein professioneller Finanzberater. 
         Hier ist der Hintergrund des Nutzers: ${aiContextInput.value}
@@ -297,8 +284,6 @@ async function frageGeminiAn() {
         Halte dich kurz und präzise.
     `;
 
-    // 3. API Call an Google Gemini
-// 3. API Call an Google Gemini
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
             method: 'POST',
@@ -310,11 +295,9 @@ async function frageGeminiAn() {
 
         const data = await response.json();
         
-        // NEU: Präzisere Fehlerauswertung
         if (data.candidates && data.candidates[0].content.parts[0].text) {
             aiResponseContainer.innerText = data.candidates[0].content.parts[0].text;
         } else if (data.error && data.error.message) {
-            // Wenn Google einen spezifischen Fehler wirft, zeigen wir ihn an!
             aiResponseContainer.innerText = "Google API-Fehler: " + data.error.message;
             console.error("API Error:", data.error);
         } else {
@@ -324,5 +307,6 @@ async function frageGeminiAn() {
     } catch (error) {
         aiResponseContainer.innerText = "Verbindungsfehler: " + error.message;
     }
+}
 
 startConsultationBtn.addEventListener('click', frageGeminiAn);
