@@ -234,12 +234,31 @@ li.minus { border-left-color: #e74c3c; }
 
     .left-column, 
     .right-column {
-        width: 100%; /* Auf dem Handy nehmen beide Karten die volle Breite ein */
-        min-width: 0; /* Überschreibt das min-width von der Desktop-Ansicht */
+        width: 100%;
+        min-width: 0;
     }
 
     .right-column {
-        max-height: none; /* Entfernt die künstliche Scrollbar */
-        overflow-y: visible; /* Auf dem Handy scrollt man besser über die ganze Seite */
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    /* NEU: Header-Anpassung für die mobile Ansicht */
+    .right-header {
+        flex-direction: column-reverse; /* Export-Steuerung nach oben, Titel nach unten */
+        align-items: stretch; /* Elemente nehmen die volle Breite ein */
+        gap: 15px; /* Abstand zwischen Export-Bereich und Titel */
+        text-align: center;
+    }
+
+    .export-controls {
+        width: 100%;
+        justify-content: center; /* Zentriert Dropdown und Button auf dem Handy */
+    }
+
+    /* Optional: Macht Dropdown und Button auf dem Handy etwas breiter/griffiger */
+    #export-format, .export-btn {
+        flex: 1; 
+        font-size: 14px;
     }
 }
