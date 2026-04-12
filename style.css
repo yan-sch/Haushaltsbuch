@@ -1,12 +1,20 @@
 /* ========================================== */
 /* GRUND-LAYOUT & KARTEN-DESIGN               */
 /* ========================================== */
+
+/* 1. Die magische Regel: Padding macht Elemente nicht mehr breiter! */
+* {
+    box-sizing: border-box;
+}
+
 body {
+    margin: 0; /* 2. Entfernt den lästigen Browser-Standardrand */
+    padding: 15px; /* Gleichmäßiger, minimaler Rahmen um die ganze App */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f0f2f5;
     display: flex;
     justify-content: center;
-    padding: 20px;
+    overflow-x: hidden; /* 3. Blockiert das seitliche Wischen rigoros */
 }
 
 .container {
@@ -228,6 +236,11 @@ li.minus { border-left-color: #e74c3c; }
 /* RESPONSIVES DESIGN (FÜR SMARTPHONES)       */
 /* ========================================== */
 @media (max-width: 768px) {
+
+    body {
+        padding: 10px; /* Auf dem Handy den Rand noch etwas verkleinern */
+    }
+
     .layout-split {
         flex-direction: column; /* Stapelt die Karten untereinander */
     }
