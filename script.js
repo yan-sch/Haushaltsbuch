@@ -298,6 +298,7 @@ async function frageGeminiAn() {
     `;
 
     // 3. API Call an Google Gemini
+// 3. API Call an Google Gemini
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
             method: 'POST',
@@ -309,14 +310,19 @@ async function frageGeminiAn() {
 
         const data = await response.json();
         
+        // NEU: Präzisere Fehlerauswertung
         if (data.candidates && data.candidates[0].content.parts[0].text) {
             aiResponseContainer.innerText = data.candidates[0].content.parts[0].text;
+        } else if (data.error && data.error.message) {
+            // Wenn Google einen spezifischen Fehler wirft, zeigen wir ihn an!
+            aiResponseContainer.innerText = "Google API-Fehler: " + data.error.message;
+            console.error("API Error:", data.error);
         } else {
-            aiResponseContainer.innerText = "Fehler: Die KI konnte keine Antwort generieren. Prüfe deinen Key.";
+            aiResponseContainer.innerText = "Unbekannter Fehler. Schau in die Browser-Konsole (F12) für mehr Details.";
+            console.log("Gesamte Antwort:", data);
         }
     } catch (error) {
         aiResponseContainer.innerText = "Verbindungsfehler: " + error.message;
     }
-}
 
 startConsultationBtn.addEventListener('click', frageGeminiAn);
