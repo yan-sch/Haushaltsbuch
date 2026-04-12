@@ -1,0 +1,16 @@
+{
+  "short_name": "BudgetApp",
+  "name": "Mein Haushaltsbuch",
+  "description": "Private Finanzverwaltung",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f0f2f5",
+  "theme_color": "#3498db",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1611/1611154.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
