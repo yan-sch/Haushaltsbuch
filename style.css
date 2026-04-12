@@ -223,3 +223,23 @@ li.minus { border-left-color: #e74c3c; }
         border: none;
     }
 }
+
+/* ========================================== */
+/* RESPONSIVES DESIGN (FÜR SMARTPHONES)       */
+/* ========================================== */
+@media (max-width: 768px) {
+    .layout-split {
+        flex-direction: column; /* Stapelt die Karten untereinander */
+    }
+
+    .left-column, 
+    .right-column {
+        width: 100%; /* Auf dem Handy nehmen beide Karten die volle Breite ein */
+        min-width: 0; /* Überschreibt das min-width von der Desktop-Ansicht */
+    }
+
+    .right-column {
+        max-height: none; /* Entfernt die künstliche Scrollbar */
+        overflow-y: visible; /* Auf dem Handy scrollt man besser über die ganze Seite */
+    }
+}

@@ -18,7 +18,7 @@ let buchungen = [];
 // 2. LOGIK FÜR DIE UNTERKATEGORIEN
 // ==========================================
 const einnahmeKategorien = ["Gehälter", "Staatl. Unterstützung", "Sonstige Einnahmen"];
-const ausgabeKategorien = ["Wohnen", "Mobilität", "Medien", "Sport", "Gesundheit", "Versicherungen", "Haushaltseinkauf", "Auswärts essen", "Investitionen", "Haustiere", "Spaß", "Sonstige"];
+const ausgabeKategorien = ["Wohnen", "Mobilität", "Medien", "Sport", "Gesundheit", "Versicherungen", "Kleidung", "Kommunikation", "Haushaltseinkauf", "Auswärts essen", "Investitionen", "Haustiere", "Spaß", "Sonstige"];
 
 function updateSubcategories() {
     subcategorySelect.innerHTML = "";
