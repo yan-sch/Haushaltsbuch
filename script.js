@@ -235,7 +235,7 @@ function erstelleCSV() {
 // 7. KI-FINANZBERATUNG (GEMINI API)
 // ==========================================
 
-const dashboardPage = document.querySelector('.layout-split:not(#consultation-page)');
+const dashboardPage = document.getElementById('main-dashboard');
 const consultationPage = document.getElementById('consultation-page');
 const showConsultationBtn = document.getElementById('show-consultation-btn');
 const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');

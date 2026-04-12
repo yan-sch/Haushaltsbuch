@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mein Haushaltsbuch</title>
     <link rel="manifest" href="manifest.json">
-
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="Haushaltsbuch">
-        <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1611/1611154.png">
-
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Haushaltsbuch">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1611/1611154.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Wir fügen die Klasse 'layout-split' hinzu, um Flexbox zu aktivieren -->
-    <div class="container layout-split">
+
+    <div id="main-dashboard" class="container layout-split">
         
-        <!-- LINKE SPALTE: Dashboard & Eingabe -->
         <div class="left-column">
             <h1>💰 Haushaltsbuch</h1>
             
@@ -39,34 +36,35 @@
                         <option value="einnahme">Einnahme (+)</option>
                         <option value="ausgabe">Ausgabe (-)</option>
                     </select>
-                    <select id="subcategory">
-                        <!-- Wird durch JS gefüllt -->
-                    </select>
+                    <select id="subcategory"></select>
                     <button type="submit">Hinzufügen</button>
                 </form>
             </section>
         </div>
 
-        <!-- RECHTE SPALTE: Die sortierte Liste -->
         <div class="right-column">
-            <section id="list-section">
-                <div class="right-header">
-                    <h3>Buchungsübersicht</h3>
-                    <div class="export-controls">
-                        <select id="export-format">
-                            <option value="csv">Excel (CSV)</option>
-                            <option value="pdf">PDF (Drucken)</option>
-                        </select>
-                        <button id="export-btn" class="export-btn">⬇ Export</button>
-                    </div>
+            <button id="show-consultation-btn" class="nav-btn">➡️ Zur KI-Finanzberatung</button>
+            
+            <div class="right-header">
+                <h3>Buchungsübersicht</h3>
+                <div class="export-controls">
+                    <select id="export-format">
+                        <option value="csv">Excel (CSV)</option>
+                        <option value="pdf">PDF (Drucken)</option>
+                    </select>
+                    <button id="export-btn" class="export-btn">⬇ Export</button>
                 </div>
-
-                <button id="show-consultation-btn" class="nav-btn">➡️ Zur KI-Finanzberatung</button>
-
-<div class="right-header">
+            </div>
+            
+            <section id="list-section">
+                <div id="transaction-list-container"></div>
+            </section>
+        </div>
+        
     </div>
 
-    <div id="consultation-page" class="layout-split" style="display: none;">
+    <div id="consultation-page" class="container layout-split" style="display: none;">
+        
         <div class="left-column">
             <button id="back-to-dashboard-btn" class="nav-btn">⬅️ Zurück zum Dashboard</button>
             <h3>Hintergrund-Infos</h3>
@@ -86,14 +84,6 @@
             <div id="ai-response-container" class="ai-output">
                 Hier erscheint nach dem Klick deine Analyse...
             </div>
-        </div>
-    </div>
-                
-                <!-- NEU: Ein Container (div) statt einer festen Liste (ul) -->
-                <div id="transaction-list-container">
-                    <!-- JS generiert hier gleich die Zwischenüberschriften und Listen -->
-                </div>
-            </section>
         </div>
 
     </div>
