@@ -14,6 +14,45 @@ const expenseDisplay = document.getElementById('total-expense');
 
 let buchungen = [];
 
+function speichereDaten() {
+    localStorage.setItem('haushaltsbuch_buchungen', JSON.stringify(buchungen));
+    const formData = {
+        description: descriptionInput.value,
+        amount: amountInput.value,
+        category: categorySelect.value,
+        subcategory: subcategorySelect.value,
+        aiContext: aiContextInput.value
+    };
+    localStorage.setItem('haushaltsbuch_form', JSON.stringify(formData));
+}
+
+function ladeDaten() {
+    const gespeicherteBuchungen = localStorage.getItem('haushaltsbuch_buchungen');
+    if (gespeicherteBuchungen) {
+        try {
+            buchungen = JSON.parse(gespeicherteBuchungen);
+        } catch (error) {
+            console.error('Fehler beim Laden der gespeicherten Buchungen:', error);
+            buchungen = [];
+        }
+    }
+
+    const gespeichertesFormular = localStorage.getItem('haushaltsbuch_form');
+    if (gespeichertesFormular) {
+        try {
+            const formData = JSON.parse(gespeichertesFormular);
+            descriptionInput.value = formData.description || '';
+            amountInput.value = formData.amount || '';
+            categorySelect.value = formData.category || 'einnahme';
+            updateSubcategories();
+            subcategorySelect.value = formData.subcategory || subcategorySelect.value;
+            aiContextInput.value = formData.aiContext || '';
+        } catch (error) {
+            console.error('Fehler beim Laden der gespeicherten Formulardaten:', error);
+        }
+    }
+}
+
 // ==========================================
 // 2. LOGIK FÜR DIE UNTERKATEGORIEN
 // ==========================================
@@ -32,8 +71,13 @@ function updateSubcategories() {
         subcategorySelect.appendChild(neueOption);
     });
 }
-categorySelect.addEventListener("change", updateSubcategories);
+categorySelect.addEventListener("change", () => {
+    updateSubcategories();
+    speichereDaten();
+});
 updateSubcategories();
+ladeDaten();
+updateUI();
 
 // ==========================================
 // 3. DIE LÖSCH-FUNKTION
@@ -42,6 +86,7 @@ function loescheBuchung(idZumLoeschen) {
     buchungen = buchungen.filter(function(buchung) {
         return buchung.id !== idZumLoeschen;
     });
+    speichereDaten();
     updateUI(); 
 }
 
@@ -157,6 +202,7 @@ form.addEventListener('submit', function(event) {
     descriptionInput.value = '';
     amountInput.value = '';
 
+    speichereDaten();
     updateUI(); 
 });
 
@@ -235,6 +281,10 @@ const apiKeyInput = document.getElementById('api-key-input');
 const aiContextInput = document.getElementById('ai-context');
 const startConsultationBtn = document.getElementById('start-consultation-btn');
 const aiResponseContainer = document.getElementById('ai-response-container');
+
+[descriptionInput, amountInput, categorySelect, subcategorySelect, aiContextInput].forEach(element => {
+    element.addEventListener('input', speichereDaten);
+});
 
 // Navigation
 showConsultationBtn.addEventListener('click', () => {
