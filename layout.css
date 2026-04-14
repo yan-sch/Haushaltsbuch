@@ -44,10 +44,11 @@
     gap: 15px;
 }
 
-.bottom-buttons .green-nav-btn {
+.bottom-buttons .nav-btn {
     flex: 1;
     margin-bottom: 0;
 }
+
 
 
 /* Custom Scrollbar für die rechte Karte */
