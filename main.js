@@ -27,9 +27,12 @@ const startConsultationBtn = document.getElementById('start-consultation-btn');
 const aiResponseContainer = document.getElementById('ai-response-container');
 const aiFinancialAnalysis = document.getElementById('ai-financial-analysis');
 const aiDebtAnalysis = document.getElementById('ai-debt-analysis');
+const analysisDateInput = document.getElementById('analysis-date');
 
 const exportBtn = document.getElementById('export-btn');
 const exportFormat = document.getElementById('export-format');
+const consultationExportBtn = document.getElementById('consultation-export-btn');
+const consultationExportFormat = document.getElementById('consultation-export-format');
 
 // Schulden-Elemente
 const debtForm = document.getElementById('debt-form');
@@ -409,6 +412,10 @@ async function frageGeminiAn() {
     aiFinancialAnalysis.innerText = "Hier erscheint die Finanzanalyse...";
     aiDebtAnalysis.innerText = "Hier erscheint die Schuldenanalyse...";
 
+    const selectedDate = analysisDateInput && analysisDateInput.value ? new Date(analysisDateInput.value) : new Date();
+    const formattedDate = `${selectedDate.getDate().toString().padStart(2, '0')}.${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}.${selectedDate.getFullYear()}`;
+    const datumSatz = `Heute ist der ${formattedDate}.`;
+
     const buchungsListeText = buchungen.map(b =>
         `- ${b.wert > 0 ? 'Einnahme' : 'Ausgabe'}: ${b.unterkategorie} (${b.beschreibung}) -> ${b.wert}€`
     ).join('\n');
@@ -435,8 +442,9 @@ async function frageGeminiAn() {
 
     const prompt = `
         Du bist ein professioneller Finanzberater.
+        ${datumSatz}
         Hier ist der Hintergrund des Nutzers: ${aiContextInput.value}
-
+        
         Hier sind die aktuellen Buchungen:
         ${buchungsListeText}
 
@@ -471,7 +479,7 @@ async function frageGeminiAn() {
         3. Geschätzte Zeit bis Schuldenfreiheit
         4. Empfehlungen zur Optimierung des Schuldenabbaus
 
-        Halte beide Blöcke präzise und strukturiert.
+        Halte beide Blöcke präzise und strukturiert. Gebe die Pläne als Liste und nicht in tabellarischer Form aus.
     `;
 
     // Alternative Gemini-Modelle: gemini-2.5-pro, gemini-2.0-flash-001, gemini-2.0-flash-lite, gemini-2.0-flash, gemini-2.5-flash
@@ -567,6 +575,13 @@ window.addEventListener('DOMContentLoaded', () => {
             window.print();
         } else {
             erstelleCSV();
+        }
+    });
+
+    // Konsultation Export
+    consultationExportBtn.addEventListener('click', function() {
+        if (consultationExportFormat.value === 'pdf') {
+            window.print();
         }
     });
 

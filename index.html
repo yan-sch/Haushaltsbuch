@@ -78,6 +78,8 @@
         <div class="left-column">
             <button id="back-to-dashboard-btn" class="nav-btn">⬅️ Zurück zum Dashboard</button>
             <h3>Hintergrund-Infos</h3>
+            <label for="analysis-date" style="display: block; margin-bottom: 10px; font-weight: 500;">Analysedatum:</label>
+            <input type="date" id="analysis-date" style="width: 100%; margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
             <p class="info-text">Gib hier Infos zu deiner Lebenssituation ein (Job, Familie, Ziele), damit die KI dich besser beraten kann.</p>
             <textarea id="ai-context" placeholder="Beispiel: Ich arbeite Vollzeit, habe 2 Kinder, möchte monatlich 500€ sparen für ein Haus..."></textarea>
             
@@ -90,7 +92,15 @@
         </div>
 
         <div class="right-column">
-            <h3>KI-Finanzanalyse</h3>
+            <div class="right-header">
+                <h3>KI-Finanzanalyse</h3>
+                <div class="export-controls">
+                    <select id="consultation-export-format">
+                        <option value="pdf">PDF (Drucken)</option>
+                    </select>
+                    <button id="consultation-export-btn" class="export-btn">⬇ Export</button>
+                </div>
+            </div>
             <div id="ai-financial-analysis" class="ai-output">
                 Hier erscheint die Finanzanalyse...
             </div>
