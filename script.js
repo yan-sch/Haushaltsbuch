@@ -334,6 +334,8 @@ async function frageGeminiAn() {
         Halte dich kurz und präzise.
     `;
 
+    // Alternative Gemini-Modelle: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash-exp, gemini-pro, gemini-pro-vision
+    // Kopiere den gewünschten Modellnamen und ersetze "gemini-2.5-flash" in der nächsten Zeile
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
             method: 'POST',
