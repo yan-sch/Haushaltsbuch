@@ -1,0 +1,76 @@
+/* layout.css - Layout und Responsive Design */
+.layout-split {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Linke Karte (Eingabe) */
+.left-column {
+    flex: 1;
+    min-width: 300px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+/* Rechte Karte (Ausgabe / Liste) */
+.right-column {
+    flex: 2.2;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar für die rechte Karte */
+.right-column::-webkit-scrollbar {
+    width: 8px;
+}
+.right-column::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+/* RESPONSIVES DESIGN (FÜR SMARTPHONES) */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .layout-split {
+        flex-direction: column;
+    }
+
+    .left-column,
+    .right-column {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .right-column {
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    /* Header-Anpassung für die mobile Ansicht */
+    .right-header {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .export-controls {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #export-format, .export-btn {
+        flex: 1;
+        font-size: 14px;
+    }
+}

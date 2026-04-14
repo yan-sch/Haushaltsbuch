@@ -1,0 +1,113 @@
+/* components.css - Formulare, Buttons und UI-Komponenten */
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+input, select, button {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+/* Der grüne Hinzufügen-Button */
+button[type="submit"] {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #27ae60;
+}
+
+/* Navigation & Buttons */
+.nav-btn {
+    width: 100%;
+    margin-bottom: 15px;
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.ai-btn {
+    background-color: #8e44ad;
+    color: white;
+    width: 100%;
+    padding: 15px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* Der blaue Export-Button */
+.export-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.export-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Textfelder */
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.api-settings {
+    margin-top: 20px;
+    padding: 10px;
+    background: #fdf2f2;
+    border-radius: 8px;
+}
+
+.api-settings input {
+    width: 100%;
+    font-size: 12px;
+    padding: 8px;
+}
+
+/* KI-Ausgabe */
+.ai-output {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 300px;
+    line-height: 1.6;
+    font-size: 14px;
+    white-space: pre-wrap;
+    border: 1px inset #eee;
+}
+
+.info-text { font-size: 12px; color: #666; margin-bottom: 10px; }
