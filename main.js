@@ -25,6 +25,8 @@ const backToDashboardFromDebtsBtn = document.getElementById('back-to-dashboard-f
 const apiKeyInput = document.getElementById('api-key-input');
 const startConsultationBtn = document.getElementById('start-consultation-btn');
 const aiResponseContainer = document.getElementById('ai-response-container');
+const aiFinancialAnalysis = document.getElementById('ai-financial-analysis');
+const aiDebtAnalysis = document.getElementById('ai-debt-analysis');
 
 const exportBtn = document.getElementById('export-btn');
 const exportFormat = document.getElementById('export-format');
@@ -404,11 +406,32 @@ async function frageGeminiAn() {
         return;
     }
 
-    aiResponseContainer.innerText = "Die KI analysiert deine Finanzen... bitte warten...";
+    aiFinancialAnalysis.innerText = "Hier erscheint die Finanzanalyse...";
+    aiDebtAnalysis.innerText = "Hier erscheint die Schuldenanalyse...";
 
     const buchungsListeText = buchungen.map(b =>
         `- ${b.wert > 0 ? 'Einnahme' : 'Ausgabe'}: ${b.unterkategorie} (${b.beschreibung}) -> ${b.wert}€`
     ).join('\n');
+
+    // Schulden für die Analyse vorbereiten
+    const schuldenListeText = schulden.map(s =>
+        `- ${s.debtor}: ${s.amount}€${s.interestRate ? ` (Zins: ${s.interestRate}%)` : ''}${s.priority ? ` [Priorität: ${s.priority}]` : ''}${s.dueDate ? ` Fällig: ${new Date(s.dueDate).toLocaleDateString('de-DE')}` : ''}${s.fixedCost === 'yes' ? ' (bereits in Fixkosten berücksichtigt)' : ''}`
+    ).join('\n');
+
+    // Schulden für Rückzahlungsplan filtern (nur die nicht bereits in Fixkosten)
+    const schuldenFuerPlan = schulden.filter(s => s.fixedCost !== 'yes');
+    const schuldenPlanText = schuldenFuerPlan.map(s =>
+        `- ${s.debtor}: ${s.amount}€${s.interestRate ? ` (Zins: ${s.interestRate}%)` : ''}${s.priority ? ` [Priorität: ${s.priority}]` : ''}${s.dueDate ? ` Fällig: ${new Date(s.dueDate).toLocaleDateString('de-DE')}` : ''}`
+    ).join('\n');
+
+    // Monatlichen Überschuss berechnen
+    let monatlicheEinnahmen = 0;
+    let monatlicheAusgaben = 0;
+    buchungen.forEach(b => {
+        if (b.wert > 0) monatlicheEinnahmen += b.wert;
+        else monatlicheAusgaben += Math.abs(b.wert);
+    });
+    const monatlicherUeberschuss = monatlicheEinnahmen - monatlicheAusgaben;
 
     const prompt = `
         Du bist ein professioneller Finanzberater.
@@ -417,14 +440,41 @@ async function frageGeminiAn() {
         Hier sind die aktuellen Buchungen:
         ${buchungsListeText}
 
-        Bitte erstelle eine strukturierte Analyse:
-        1. Kurze Zusammenfassung der aktuellen Lage.
+        Hier sind die aktuellen Schulden:
+        ${schuldenListeText}
+
+        Monatlicher Überschuss: ${monatlicherUeberschuss.toFixed(2)}€
+
+        Bitte erstelle eine strukturierte Analyse in zwei separaten Blöcken:
+
+        === FINANZANALYSE ===
+        1. Kurze Zusammenfassung der aktuellen finanziellen Lage (Einnahmen, Ausgaben, Überschuss).
         2. Identifiziere die 3 größten Sparpotenziale.
         3. Gib konkrete Tipps zur Verbesserung der Liquidität basierend auf den Hintergrundinfos.
-        Halte dich kurz und präzise.
+
+        === SCHULDENANALYSE UND RÜCKZAHLUNGSPLAN ===
+        Basierend auf dem monatlichen Überschuss von ${monatlicherUeberschuss.toFixed(2)}€ erstelle einen optimalen Schuldenabbau-Plan.
+        Berücksichtige dabei:
+        - Zinssätze (höhere Zinsen zuerst)
+        - Prioritäten (A vor B vor C)
+        - Fälligkeiten
+        - Verfügbaren monatlichen Überschuss
+
+        Schulden, die bereits in den Fixkosten berücksichtigt sind, sollen NICHT im Rückzahlungsplan enthalten sein.
+
+        Schulden für den Plan:
+        ${schuldenPlanText || 'Keine Schulden für Rückzahlungsplan vorhanden.'}
+
+        Erstelle:
+        1. Übersicht über alle Schulden (inkl. der bereits in Fixkosten berücksichtigten)
+        2. Monatlicher Tilgungsplan mit priorisierten Zahlungen
+        3. Geschätzte Zeit bis Schuldenfreiheit
+        4. Empfehlungen zur Optimierung des Schuldenabbaus
+
+        Halte beide Blöcke präzise und strukturiert.
     `;
 
-    // Alternative Gemini-Modelle: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash-exp, gemini-pro, gemini-pro-vision
+    // Alternative Gemini-Modelle: gemini-2.5-pro, gemini-2.0-flash-001, gemini-2.0-flash-lite, gemini-2.0-flash, gemini-2.5-flash
     // Kopiere den gewünschten Modellnamen und ersetze "gemini-2.5-flash" in der nächsten Zeile
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
@@ -438,12 +488,24 @@ async function frageGeminiAn() {
         const data = await response.json();
 
         if (data.candidates && data.candidates[0].content.parts[0].text) {
-            aiResponseContainer.innerText = data.candidates[0].content.parts[0].text;
+            const fullResponse = data.candidates[0].content.parts[0].text;
+            
+            // Parse die Antwort in zwei Blöcke
+            const financialMatch = fullResponse.match(/=== FINANZANALYSE ===([\s\S]*?)(?:=== SCHULDENANALYSE UND RÜCKZAHLUNGSPLAN ===|$)/);
+            const debtMatch = fullResponse.match(/=== SCHULDENANALYSE UND RÜCKZAHLUNGSPLAN ===([\s\S]*)/);
+            
+            const financialAnalysis = financialMatch ? financialMatch[1].trim() : 'Keine Finanzanalyse verfügbar.';
+            const debtAnalysis = debtMatch ? debtMatch[1].trim() : 'Keine Schuldenanalyse verfügbar.';
+            
+            aiFinancialAnalysis.innerText = financialAnalysis;
+            aiDebtAnalysis.innerText = debtAnalysis;
         } else if (data.error && data.error.message) {
-            aiResponseContainer.innerText = "Google API-Fehler: " + data.error.message;
+            aiFinancialAnalysis.innerText = "Google API-Fehler: " + data.error.message;
+            aiDebtAnalysis.innerText = "";
             console.error("API Error:", data.error);
         } else {
-            aiResponseContainer.innerText = "Unbekannter Fehler. Schau in die Browser-Konsole (F12) für mehr Details.";
+            aiFinancialAnalysis.innerText = "Unbekannter Fehler. Schau in die Browser-Konsole (F12) für mehr Details.";
+            aiDebtAnalysis.innerText = "";
             console.log("Gesamte Antwort:", data);
         }
     } catch (error) {
