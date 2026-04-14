@@ -23,15 +23,6 @@ Budget
 
 Technologien: - HTML - CSS - JavaScript
 
-Struktur: - Modulare Komponenten - Trennung von UI, Logik und API
-
-### Module
-
--   UI-Modul (Form + Liste)
--   Daten-Modul (State Management)
--   Export-Modul (CSV, PDF)
--   KI-Modul (API-Anbindung)
-
 ------------------------------------------------------------------------
 
 ## 4. Features

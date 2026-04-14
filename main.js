@@ -17,8 +17,11 @@ const aiContextInput = document.getElementById('ai-context');
 
 const dashboardPage = document.getElementById('main-dashboard');
 const consultationPage = document.getElementById('consultation-page');
+const debtsPage = document.getElementById('debts-page');
 const showConsultationBtn = document.getElementById('show-consultation-btn');
 const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+const showDebtsBtn = document.getElementById('show-debts-btn');
+const backToDashboardFromDebtsBtn = document.getElementById('back-to-dashboard-from-debts-btn');
 const apiKeyInput = document.getElementById('api-key-input');
 const startConsultationBtn = document.getElementById('start-consultation-btn');
 const aiResponseContainer = document.getElementById('ai-response-container');
@@ -26,16 +29,32 @@ const aiResponseContainer = document.getElementById('ai-response-container');
 const exportBtn = document.getElementById('export-btn');
 const exportFormat = document.getElementById('export-format');
 
+// Schulden-Elemente
+const debtForm = document.getElementById('debt-form');
+const debtorInput = document.getElementById('debtor');
+const debtAmountInput = document.getElementById('debt-amount');
+const interestRateInput = document.getElementById('interest-rate');
+const dueDateInput = document.getElementById('due-date');
+const debtPriorityInput = document.getElementById('debt-priority');
+const debtFixedCostYes = document.getElementById('debt-fixed-cost-yes');
+const debtFixedCostNo = document.getElementById('debt-fixed-cost-no');
+const debtDescriptionInput = document.getElementById('debt-description');
+const debtListContainer = document.getElementById('debt-list-container');
+const debtExportBtn = document.getElementById('debt-export-btn');
+const debtExportFormat = document.getElementById('debt-export-format');
+
 // ==========================================
 // Datenmodell
 // ==========================================
 let buchungen = [];
+let schulden = [];
 
 // ==========================================
 // Storage-Funktionen
 // ==========================================
 function speichereDaten() {
     localStorage.setItem('haushaltsbuch_buchungen', JSON.stringify(buchungen));
+    localStorage.setItem('haushaltsbuch_schulden', JSON.stringify(schulden));
     const formData = {
         description: descriptionInput.value,
         amount: amountInput.value,
@@ -54,6 +73,16 @@ function ladeDaten() {
         } catch (error) {
             console.error('Fehler beim Laden der gespeicherten Buchungen:', error);
             buchungen = [];
+        }
+    }
+
+    const gespeicherteSchulden = localStorage.getItem('haushaltsbuch_schulden');
+    if (gespeicherteSchulden) {
+        try {
+            schulden = JSON.parse(gespeicherteSchulden);
+        } catch (error) {
+            console.error('Fehler beim Laden der gespeicherten Schulden:', error);
+            schulden = [];
         }
     }
 
@@ -179,6 +208,61 @@ function updateUI() {
     expenseDisplay.innerText = expense.toFixed(2);
 }
 
+function updateDebtsUI() {
+    debtListContainer.innerHTML = '';
+
+    if (schulden.length === 0) {
+        debtListContainer.innerHTML = '<p>Keine Schulden eingetragen.</p>';
+        return;
+    }
+
+    let totalDebt = 0;
+    schulden.forEach(debt => totalDebt += debt.amount);
+
+    const totalElement = document.createElement('div');
+    totalElement.classList.add('saldo-titel');
+    totalElement.innerHTML = `<span>Gesamtschulden</span> <span>${totalDebt.toFixed(2)}€</span>`;
+    debtListContainer.appendChild(totalElement);
+
+    const ul = document.createElement('ul');
+
+    schulden.forEach(function(debt) {
+        const li = document.createElement('li');
+        li.classList.add('debt-item');
+
+        const textSpan = document.createElement('span');
+        textSpan.innerHTML = `
+            <strong>${debt.debtor}</strong>: ${debt.amount.toFixed(2)}€
+            ${debt.interestRate ? ` (Zins: ${debt.interestRate}%)` : ''}
+            ${debt.priority ? ` <strong>[${debt.priority}]</strong>` : ''}
+            ${debt.dueDate ? ` Fällig: ${new Date(debt.dueDate).toLocaleDateString('de-DE')}` : ''}
+            ${debt.fixedCost ? `<br><small>Fixkosten berücksichtigt: ${debt.fixedCost === 'yes' ? 'Ja' : 'Nein'}</small>` : ''}
+            ${debt.description ? `<br><small>${debt.description}</small>` : ''}
+        `;
+
+        const editBtn = document.createElement('button');
+        editBtn.innerText = "✏️";
+        editBtn.classList.add('edit-btn');
+        editBtn.addEventListener('click', function() {
+            bearbeiteSchuld(debt.id);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerText = "✖";
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.addEventListener('click', function() {
+            loescheSchuld(debt.id);
+        });
+
+        li.appendChild(textSpan);
+        li.appendChild(editBtn);
+        li.appendChild(deleteBtn);
+        ul.appendChild(li);
+    });
+
+    debtListContainer.appendChild(ul);
+}
+
 // ==========================================
 // Transaktions-Funktionen
 // ==========================================
@@ -186,6 +270,56 @@ function loescheBuchung(idZumLoeschen) {
     buchungen.splice(buchungen.findIndex(b => b.id === idZumLoeschen), 1);
     speichereDaten();
     updateUI();
+}
+
+// ==========================================
+// Schulden-Funktionen
+// ==========================================
+function fuegeSchuldHinzu(debtor, amount, interestRate, dueDate, priority, fixedCost, description) {
+    const neueSchuld = {
+        id: Date.now(),
+        debtor: debtor,
+        amount: parseFloat(amount),
+        interestRate: interestRate ? parseFloat(interestRate) : null,
+        dueDate: dueDate || null,
+        priority: priority || null,
+        fixedCost: fixedCost || 'no',
+        description: description || ''
+    };
+    schulden.push(neueSchuld);
+    speichereDaten();
+    updateDebtsUI();
+}
+
+function loescheSchuld(idZumLoeschen) {
+    schulden.splice(schulden.findIndex(s => s.id === idZumLoeschen), 1);
+    speichereDaten();
+    updateDebtsUI();
+}
+
+function bearbeiteSchuld(id) {
+    const schuld = schulden.find(s => s.id === id);
+    if (!schuld) return;
+
+    debtorInput.value = schuld.debtor;
+    debtAmountInput.value = schuld.amount;
+    interestRateInput.value = schuld.interestRate || '';
+    dueDateInput.value = schuld.dueDate || '';
+    debtPriorityInput.value = schuld.priority || '';
+    debtDescriptionInput.value = schuld.description;
+    
+    // Setze die Fixkosten-Radio
+    if (schuld.fixedCost === 'yes') {
+        debtFixedCostYes.checked = true;
+    } else {
+        debtFixedCostNo.checked = true;
+    }
+
+    // Entferne die Schuld temporär
+    loescheSchuld(id);
+
+    // Fokussiere das Formular
+    debtorInput.focus();
 }
 
 // ==========================================
@@ -236,6 +370,25 @@ function erstelleCSV() {
     const link = document.createElement("a");
     link.href = url;
     link.download = "Haushaltsbuch_Export.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+function erstelleSchuldenCSV() {
+    let csvString = "Schuldner,Betrag (EUR),Zinssatz (%),Fälligkeit,Beschreibung\n";
+
+    schulden.forEach(schuld => {
+        const dueDate = schuld.dueDate ? new Date(schuld.dueDate).toLocaleDateString('de-DE') : '';
+        csvString += `"${schuld.debtor}",${schuld.amount.toFixed(2)},${schuld.interestRate || ''},"${dueDate}","${schuld.description}"\n`;
+    });
+
+    const blob = new Blob(["\uFEFF" + csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Schulden_Export.csv";
     link.click();
 
     URL.revokeObjectURL(url);
@@ -306,6 +459,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ladeDaten();
     updateSubcategories(); // erneut nach laden
     updateUI();
+    updateDebtsUI();
 
     // Event-Listener für Speicherung bei Änderungen
     [descriptionInput, amountInput, categorySelect, subcategorySelect, aiContextInput].forEach(element => {
@@ -376,4 +530,42 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Start Consultation
     startConsultationBtn.addEventListener('click', frageGeminiAn);
+
+    // Schulden-Form
+    debtForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fixedCost = debtFixedCostYes.checked ? 'yes' : 'no';
+        fuegeSchuldHinzu(
+            debtorInput.value,
+            debtAmountInput.value,
+            interestRateInput.value,
+            dueDateInput.value,
+            debtPriorityInput.value,
+            fixedCost,
+            debtDescriptionInput.value
+        );
+        debtForm.reset();
+        debtFixedCostNo.checked = true; // Reset radio button
+    });
+
+    // Schulden-Export
+    debtExportBtn.addEventListener('click', function() {
+        if (debtExportFormat.value === 'pdf') {
+            window.print();
+        } else {
+            erstelleSchuldenCSV();
+        }
+    });
+
+    // Navigation Schulden
+    showDebtsBtn.addEventListener('click', () => {
+        dashboardPage.style.display = 'none';
+        debtsPage.style.display = 'flex';
+        updateDebtsUI();
+    });
+
+    backToDashboardFromDebtsBtn.addEventListener('click', () => {
+        dashboardPage.style.display = 'flex';
+        debtsPage.style.display = 'none';
+    });
 });

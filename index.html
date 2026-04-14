@@ -46,6 +46,7 @@
         </div>
 
         <div class="right-column">
+            <button id="show-debts-btn" class="nav-btn">💳 Schuldenaufstellung</button>
             <button id="show-consultation-btn" class="nav-btn">➡️ Zur KI-Finanzberatung</button>
             
             <div class="right-header">
@@ -89,6 +90,58 @@
             </div>
         </div>
 
+    </div>
+
+    <div id="debts-page" class="container layout-split" style="display: none;">
+        
+        <div class="left-column">
+            <button id="back-to-dashboard-from-debts-btn" class="nav-btn">⬅️ Zurück zum Dashboard</button>
+            <h3>Schuldeneingabe</h3>
+            
+            <section id="debt-input-section">
+                <form id="debt-form">
+                    <input type="text" id="debtor" placeholder="Schuldner (z.B. Bank, Person)" required>
+                    <input type="number" id="debt-amount" placeholder="Betrag in €" step="0.01" required>
+                    <input type="number" id="interest-rate" placeholder="Zinssatz in %" step="0.01" min="0">
+                    <input type="date" id="due-date" placeholder="Fälligkeit">
+                    <select id="debt-priority">
+                        <option value="">Priorität wählen...</option>
+                        <option value="A">A - Termingetreue unumgänglich</option>
+                        <option value="B">B - Termingetreue empfehlenswert</option>
+                        <option value="C">C - Flexible Rückzahlung</option>
+                    </select>
+                    <div class="form-group-horizontal">
+                        <label>Tilgung in Fixkosten berücksichtigt?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="debt-fixed-cost-yes" name="debt-fixed-cost" value="yes">
+                            <label for="debt-fixed-cost-yes">Ja</label>
+                            <input type="radio" id="debt-fixed-cost-no" name="debt-fixed-cost" value="no" checked>
+                            <label for="debt-fixed-cost-no">Nein</label>
+                        </div>
+                    </div>
+                    <textarea id="debt-description" placeholder="Optionale Beschreibung"></textarea>
+                    <button type="submit">Schuld hinzufügen</button>
+                </form>
+            </section>
+        </div>
+
+        <div class="right-column">
+            <div class="right-header">
+                <h3>Schuldenübersicht</h3>
+                <div class="export-controls">
+                    <select id="debt-export-format">
+                        <option value="csv">Excel (CSV)</option>
+                        <option value="pdf">PDF (Drucken)</option>
+                    </select>
+                    <button id="debt-export-btn" class="export-btn">⬇ Export</button>
+                </div>
+            </div>
+            
+            <section id="debt-list-section">
+                <div id="debt-list-container"></div>
+            </section>
+        </div>
+        
     </div>
 
     <script src="main.js"></script>
