@@ -45,25 +45,30 @@
             </section>
         </div>
 
-        <div class="right-column">
-            <button id="show-debts-btn" class="nav-btn">💳 Schuldenaufstellung</button>
-            <button id="show-consultation-btn" class="nav-btn">➡️ Zur KI-Finanzberatung</button>
-            
-            <div class="right-header">
-                <h3>Buchungsübersicht</h3>
-                <div class="export-controls">
-                    <select id="export-format">
-                        <option value="csv">Excel (CSV)</option>
-                        <option value="pdf">PDF (Drucken)</option>
-                    </select>
-                    <button id="export-btn" class="export-btn">⬇ Export</button>
+                <div class="right-column-container">
+            <div class="right-column">
+                <div class="right-header">
+                    <h3>Buchungsübersicht</h3>
+                    <div class="export-controls">
+                        <select id="export-format">
+                            <option value="csv">Excel (CSV)</option>
+                            <option value="pdf">PDF (Drucken)</option>
+                        </select>
+                        <button id="export-btn" class="export-btn">⬇ Export</button>
+                    </div>
                 </div>
+                
+                <section id="list-section">
+                    <div id="transaction-list-container"></div>
+                </section>
             </div>
-            
-            <section id="list-section">
-                <div id="transaction-list-container"></div>
-            </section>
+
+            <div class="bottom-buttons">
+                <button id="show-debts-btn" class="green-nav-btn">💳 Schuldenaufstellung</button>
+                <button id="show-consultation-btn" class="green-nav-btn">➡️ Zur KI-Finanzberatung</button>
+            </div>
         </div>
+
         
     </div>
 

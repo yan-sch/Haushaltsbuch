@@ -47,6 +47,23 @@ button[type="submit"]:hover {
     cursor: pointer;
 }
 
+.green-nav-btn {
+    width: 100%;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.green-nav-btn:hover {
+    background-color: #27ae60;
+}
+
+
 .ai-btn {
     background-color: #8e44ad;
     color: white;

@@ -2,7 +2,7 @@
 .layout-split {
     display: flex;
     gap: 30px;
-    align-items: flex-start;
+    align-items: stretch; /* Geändert von flex-start auf stretch für bündige Unterkanten */
 }
 
 /* Linke Karte (Eingabe) */
@@ -13,18 +13,42 @@
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Container für die rechte Seite inkl. Buttons darunter */
+.right-column-container {
+    flex: 2.2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* Rechte Karte (Ausgabe / Liste) */
 .right-column {
-    flex: 2.2;
     background: white;
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    max-height: 80vh;
+    flex-grow: 1; /* Lässt den Kasten den verfügbaren Platz nach oben einnehmen */
+    margin-bottom: 20px;
+    max-height: 80vh; /* Erhöht die maximale Höhe wieder */
     overflow-y: auto;
 }
+
+
+
+.bottom-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.bottom-buttons .green-nav-btn {
+    flex: 1;
+    margin-bottom: 0;
+}
+
 
 /* Custom Scrollbar für die rechte Karte */
 .right-column::-webkit-scrollbar {
